@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CYBER-STRIKE 2088 // Synthwave Invaders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Background Animated Synth Grid -->
+    <div class="synth-grid-bg"></div>
+
+    <!-- Main Game Canvas Container -->
+    <div id="game-container">
+      <canvas id="game-canvas"></canvas>
+
+      <!-- In-Game HUD Overlay -->
+      <div id="hud" class="hidden">
+        <div class="hud-top">
+          <div class="hud-box">
+            <span class="hud-label">SCORE</span>
+            <span id="hud-score" class="hud-val neon-cyan">000,000</span>
+          </div>
+          <div class="hud-box center">
+            <span class="hud-label">WAVE</span>
+            <span id="hud-wave" class="hud-val neon-magenta">01</span>
+          </div>
+          <div class="hud-box">
+            <span class="hud-label">CREDITS</span>
+            <span id="hud-credits" class="hud-val neon-gold">⚡ 0</span>
+          </div>
+        </div>
+
+        <div class="hud-bottom">
+          <div class="shield-container">
+            <div class="shield-label">
+              <span>SHIELD INTEGRITY</span>
+              <span id="shield-text">100%</span>
+            </div>
+            <div class="shield-bar-outer">
+              <div id="shield-bar-inner"></div>
+            </div>
+          </div>
+          <div id="multiplier-badge" class="multiplier-badge">1.0x MULTIPLIER</div>
+        </div>
+      </div>
+
+      <!-- Main Menu Screen -->
+      <div id="screen-start" class="overlay-screen">
+        <div class="cyber-card title-card">
+          <h1 class="glitch-title" data-text="CYBER-STRIKE">CYBER-STRIKE</h1>
+          <div class="subtitle">2088 SYNTHWAVE INVADERS</div>
+          <div class="menu-actions">
+            <button id="btn-start" class="btn btn-primary">LAUNCH MISSION</button>
+            <button id="btn-open-shop" class="btn btn-secondary">HANGAR & UPGRADES</button>
+            <button id="btn-open-settings" class="btn btn-ghost">SETTINGS</button>
+          </div>
+          <div class="high-score-display">
+            HIGH SCORE: <span id="start-high-score" class="neon-cyan">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upgrade Shop / Hangar Screen -->
+      <div id="screen-shop" class="overlay-screen hidden">
+        <div class="cyber-card shop-card">
+          <h2>CYBER HANGAR</h2>
+          <div class="shop-balance">
+            AVAILABLE CREDITS: <span id="shop-credits" class="neon-gold">⚡ 0</span>
+          </div>
+
+          <div class="upgrades-list">
+            <div class="upgrade-item">
+              <div class="upg-info">
+                <span class="upg-title">PLASMA CANNON FIRERATE</span>
+                <span class="upg-level" id="lvl-fireRate">LVL 1 / 5</span>
+              </div>
+              <button class="btn btn-sm btn-upgrade" id="btn-buy-fireRate">UPGRADE (⚡ 100)</button>
+            </div>
+
+            <div class="upgrade-item">
+              <div class="upg-info">
+                <span class="upg-title">SHIELD CAPACITY</span>
+                <span class="upg-level" id="lvl-shieldMax">LVL 1 / 5</span>
+              </div>
+              <button class="btn btn-sm btn-upgrade" id="btn-buy-shieldMax">UPGRADE (⚡ 150)</button>
+            </div>
+
+            <div class="upgrade-item">
+              <div class="upg-info">
+                <span class="upg-title">SPREAD SHOT CANNON</span>
+                <span class="upg-level" id="lvl-bulletSpread">LVL 1 / 3</span>
+              </div>
+              <button class="btn btn-sm btn-upgrade" id="btn-buy-bulletSpread">UPGRADE (⚡ 250)</button>
+            </div>
+
+            <div class="upgrade-item">
+              <div class="upg-info">
+                <span class="upg-title">HEAVY PLASMA BEAM</span>
+                <span class="upg-level" id="lvl-plasmaBeam">UNLOCKED: NO</span>
+              </div>
+              <button class="btn btn-sm btn-upgrade" id="btn-buy-plasmaBeam">UNLOCK (⚡ 500)</button>
+            </div>
+
+            <div class="upgrade-item">
+              <div class="upg-info">
+                <span class="upg-title">CREDIT MAGNET</span>
+                <span class="upg-level" id="lvl-magnetRange">LVL 1 / 5</span>
+              </div>
+              <button class="btn btn-sm btn-upgrade" id="btn-buy-magnetRange">UPGRADE (⚡ 80)</button>
+            </div>
+          </div>
+
+          <button id="btn-close-shop" class="btn btn-secondary mt-15">BACK TO MAIN MENU</button>
+        </div>
+      </div>
+
+      <!-- Settings Screen -->
+      <div id="screen-settings" class="overlay-screen hidden">
+        <div class="cyber-card settings-card">
+          <h2>SETTINGS</h2>
+          <div class="setting-row">
+            <label for="slider-sfx">SFX VOLUME</label>
+            <input type="range" id="slider-sfx" min="0" max="1" step="0.05" value="0.5">
+          </div>
+          <div class="setting-row">
+            <label for="slider-music">SYNTH MUSIC VOLUME</label>
+            <input type="range" id="slider-music" min="0" max="1" step="0.05" value="0.3">
+          </div>
+          <div class="setting-row">
+            <label for="chk-screenshake">SCREEN SHAKE</label>
+            <input type="checkbox" id="chk-screenshake" checked>
+          </div>
+          <button id="btn-close-settings" class="btn btn-secondary mt-15">SAVE & BACK</button>
+        </div>
+      </div>
+
+      <!-- Game Over Screen -->
+      <div id="screen-gameover" class="overlay-screen hidden">
+        <div class="cyber-card gameover-card">
+          <h1 class="neon-magenta">MISSION FAILED</h1>
+          <div class="final-stats">
+            <div>FINAL SCORE: <span id="go-score" class="neon-cyan">0</span></div>
+            <div>WAVES COMPLETED: <span id="go-wave" class="neon-magenta">0</span></div>
+            <div>CREDITS EARNED: <span id="go-credits" class="neon-gold">⚡ 0</span></div>
+          </div>
+          <div class="menu-actions">
+            <button id="btn-restart" class="btn btn-primary">RETRY MISSION</button>
+            <button id="btn-go-shop" class="btn btn-secondary">OPEN HANGAR</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pause Screen -->
+      <div id="screen-pause" class="overlay-screen hidden">
+        <div class="cyber-card pause-card">
+          <h2>MISSION PAUSED</h2>
+          <div class="menu-actions">
+            <button id="btn-resume" class="btn btn-primary">RESUME</button>
+            <button id="btn-quit" class="btn btn-ghost">ABORT TO MENU</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
