@@ -37,7 +37,7 @@ input int      InpFVGMaxAgeBars     = 10;     // Max age of FVG in bars before d
 //--- Trade Management & Risk
 input group "--- Trade Management & Risk ---"
 input double   InpLotSize           = 0.1;    // Fixed Lot Size
-input int      InpStopLossPoints    = 150;    // Static Stop Loss in Points
+input int      InpStopLossPoints    = 400;    // Static Stop Loss in Points (Adjusted for XAUUSD M1 volatility)
 input ENUM_TP_MODE InpTPMode        = TP_MODE_STATIC_RR; // Take Profit Mode
 input double   InpTPRatio           = 1.5;    // Static Reward-to-Risk Ratio (for TP_MODE_STATIC_RR)
 input ulong    InpMagicNumber       = 777001; // Magic Number
@@ -464,8 +464,11 @@ void OnTick()
       FairValueGap bullFVG;
       if(FindRecentBullishFVG(rates, InpFVGMaxAgeBars, bullFVG))
         {
-         // Displacement Trigger: Bar 1 closed above the Bullish FVG top with strong bullish close
-         if(rates[1].close > bullFVG.topPrice && rates[1].close > rates[1].open)
+         // VALUE AREA RECLAIM + FVG INVERSION DISPLACEMENT TRIGGER:
+         // 1. Bar 1 must close back ABOVE VAL (rates[1].close > g_valPrice), confirming auction below VAL failed and price returned inside fair value.
+         // 2. Bar 1 must close above Bullish FVG top (rates[1].close > bullFVG.topPrice).
+         // 3. Bar 1 must be a strong bullish candle (rates[1].close > rates[1].open).
+         if(rates[1].close > g_valPrice && rates[1].close > bullFVG.topPrice && rates[1].close > rates[1].open)
            {
             double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
             double sl = ask - (InpStopLossPoints * _Point);
@@ -484,7 +487,7 @@ void OnTick()
                  }
               }
 
-            Print("Opening LONG trade - Failed Auction at VAL with Bullish FVG Inversion. Entry: ", ask, " SL: ", sl, " TP: ", tp);
+            Print("Opening LONG trade - Value Area Reclaim above VAL with FVG Inversion. Entry: ", ask, " SL: ", sl, " TP: ", tp);
             trade.Buy(InpLotSize, _Symbol, ask, sl, tp, "Failed Auction Model Long");
             return;
            }
@@ -497,8 +500,11 @@ void OnTick()
       FairValueGap bearFVG;
       if(FindRecentBearishFVG(rates, InpFVGMaxAgeBars, bearFVG))
         {
-         // Displacement Trigger: Bar 1 closed below the Bearish FVG bottom with strong bearish close
-         if(rates[1].close < bearFVG.bottomPrice && rates[1].close < rates[1].open)
+         // VALUE AREA RECLAIM + FVG INVERSION DISPLACEMENT TRIGGER:
+         // 1. Bar 1 must close back BELOW VAH (rates[1].close < g_vahPrice), confirming auction above VAH failed and price returned inside fair value.
+         // 2. Bar 1 must close below Bearish FVG bottom (rates[1].close < bearFVG.bottomPrice).
+         // 3. Bar 1 must be a strong bearish candle (rates[1].close < rates[1].open).
+         if(rates[1].close < g_vahPrice && rates[1].close < bearFVG.bottomPrice && rates[1].close < rates[1].open)
            {
             double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
             double sl = bid + (InpStopLossPoints * _Point);
@@ -517,7 +523,7 @@ void OnTick()
                  }
               }
 
-            Print("Opening SHORT trade - Failed Auction at VAH with Bearish FVG Inversion. Entry: ", bid, " SL: ", sl, " TP: ", tp);
+            Print("Opening SHORT trade - Value Area Reclaim below VAH with FVG Inversion. Entry: ", bid, " SL: ", sl, " TP: ", tp);
             trade.Sell(InpLotSize, _Symbol, bid, sl, tp, "Failed Auction Model Short");
             return;
            }
